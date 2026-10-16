@@ -1,0 +1,1447 @@
+/* System fonts only: the page loads nothing from other sites. */
+:root {
+  --bg: #f4f2ee;
+  --panel: #ffffff;
+  --text: #1d1b19;
+  --muted: #5f5a54;
+  --border: #d8d3cb;
+  --accent: #b3261e;
+  --accent-text: #ffffff;
+  --error-bg: #fde7e4;
+  --info-bg: #e6f0e6;
+  --warning-bg: #fbf1d5;
+  --screen-bg: #000000;
+  --touch-fill: #e4e0d9;
+  --touch-edge: #8f877c;
+  --touch-text: #3b3733;
+  --touch-action: #b3261e;
+  --touch-action-edge: #7c1a15;
+  --touch-action-text: #ffffff;
+  --touch-pressed: #ffd54a;
+  --touch-pressed-edge: #b08d16;
+  --touch-pressed-text: #1d1b19;
+  color-scheme: light;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161514;
+    --panel: #22201e;
+    --text: #ece8e2;
+    --muted: #a8a197;
+    --border: #3a3633;
+    --accent: #ef6a5f;
+    --accent-text: #161514;
+    --error-bg: #4a1f1b;
+    --info-bg: #1f3520;
+    --warning-bg: #3d3315;
+    --touch-fill: #34312e;
+    --touch-edge: #6d665e;
+    --touch-text: #ece8e2;
+    --touch-action: #c7473e;
+    --touch-action-edge: #ef6a5f;
+    --touch-action-text: #ffffff;
+    --touch-pressed: #ffd54a;
+    --touch-pressed-edge: #fff0b3;
+    --touch-pressed-text: #161514;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #161514;
+  --panel: #22201e;
+  --text: #ece8e2;
+  --muted: #a8a197;
+  --border: #3a3633;
+  --accent: #ef6a5f;
+  --accent-text: #161514;
+  --error-bg: #4a1f1b;
+  --info-bg: #1f3520;
+  --warning-bg: #3d3315;
+  --touch-fill: #34312e;
+  --touch-edge: #6d665e;
+  --touch-text: #ece8e2;
+  --touch-action: #c7473e;
+  --touch-action-edge: #ef6a5f;
+  --touch-action-text: #ffffff;
+  --touch-pressed: #ffd54a;
+  --touch-pressed-edge: #fff0b3;
+  --touch-pressed-text: #161514;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button,
+select {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+canvas:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  /* viewport-fit=cover lets the page reach under a notch; the insets keep content clear of it. */
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+}
+
+/* Touch play: the game fills the page, which neither scrolls, zooms nor selects text. */
+html.touch-play,
+html.touch-play body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+html.touch-play body {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html.touch-play .notices {
+  position: relative;
+  z-index: 6;
+}
+
+.stage.touch-play {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: var(--bg);
+  touch-action: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Focus stays on the picture for the keyboard's sake, but a ring around it means nothing to a finger. */
+.stage.touch-play canvas:focus-visible {
+  outline: none;
+}
+
+.screen-box.fitted {
+  position: absolute;
+  margin: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  align-items: center;
+  overflow: visible;
+}
+
+.touch-layer {
+  position: absolute;
+  inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-control {
+  position: absolute;
+  pointer-events: none;
+}
+
+.touch-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--touch-fill);
+  border: 2px solid var(--touch-edge);
+  color: var(--touch-text);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 0 var(--touch-edge);
+  transition: transform 60ms ease-out;
+}
+
+.touch-button.circle {
+  border-radius: 50%;
+  background: var(--touch-action);
+  border-color: var(--touch-action-edge);
+  color: var(--touch-action-text);
+  box-shadow: 0 3px 0 var(--touch-action-edge);
+}
+
+.touch-button.pill {
+  border-radius: 999px;
+}
+
+.touch-button.combo {
+  font-size: 0.7rem !important;
+  writing-mode: vertical-rl;
+  border-style: dashed;
+  box-shadow: none;
+  opacity: 0.8;
+}
+
+.touch-button[data-pressed="true"] {
+  background: var(--touch-pressed);
+  border-color: var(--touch-pressed-edge);
+  color: var(--touch-pressed-text);
+  box-shadow: none;
+  transform: translateY(2px);
+}
+
+.dpad-drawing {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dpad-body {
+  fill: var(--touch-fill);
+  stroke: var(--touch-edge);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.dpad-arm-fill {
+  fill: transparent;
+}
+
+.dpad-arrow {
+  fill: var(--touch-text);
+}
+
+.dpad-arm.lit .dpad-arm-fill {
+  fill: var(--touch-pressed);
+}
+
+.dpad-arm.lit .dpad-arrow {
+  fill: var(--touch-pressed-text);
+}
+
+.dpad-hub {
+  fill: var(--touch-edge);
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .touch-button {
+    transition: none;
+  }
+}
+
+.menu-touch {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+}
+
+.menu-touch .hint {
+  margin: 0;
+}
+
+.menu-slider {
+  display: grid;
+  grid-template-columns: 5rem minmax(8rem, 16rem) 3rem;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.menu-slider output {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.menu-check {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.top h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.subtitle {
+  color: var(--muted);
+}
+
+.top .theme {
+  margin-left: auto;
+}
+
+.notices {
+  margin: 0.5rem 0;
+}
+
+.notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.notice.error {
+  background: var(--error-bg);
+}
+
+.notice.info {
+  background: var(--info-bg);
+}
+
+.notice.warning,
+.storage-warning,
+.persistence.warning {
+  background: var(--warning-bg);
+}
+
+.storage-warning,
+.persistence {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  font: inherit;
+}
+
+.notice button {
+  border: none;
+  background: transparent;
+  padding: 0 0.25rem;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.notice .update-reload {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.1rem 0.6rem;
+}
+
+.layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/*
+ * The panels beside the picture (controls, Tune, tools, console) share one
+ * column, stacked in that order, beside the picture where there is room and
+ * under it otherwise. The column is as wide as the widest open panel needs
+ * (the rules go from narrowest to widest, so the widest wins), and the page
+ * widens by it, so where the window allows, the picture keeps the size it
+ * has without them.
+ */
+.side-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* Room for a primary and a secondary key column beside the gamepad's. */
+.app.with-controls {
+  max-width: calc(1200px + 20rem + 1rem);
+}
+
+.app.with-tune {
+  max-width: calc(1200px + 22rem + 1rem);
+}
+
+.app.with-console {
+  max-width: calc(1200px + 24rem + 1rem);
+}
+
+.app.with-tools {
+  max-width: calc(1200px + 27rem + 1rem);
+}
+
+@media (min-width: 1000px) {
+  .layout:is(.with-controls, .with-tune, .with-tools, .with-console) {
+    align-items: start;
+  }
+
+  .layout.with-controls {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+
+  .layout.with-tune {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+
+  .layout.with-console {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+
+  .layout.with-tools {
+    grid-template-columns: minmax(0, 1fr) 27rem;
+  }
+}
+
+/* A test link's label: across the top of the page, above the picture, never over it. */
+.test-label {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  background: #ffd54a;
+  color: #1d1b19;
+  border: 2px solid #1d1b19;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.controls-side {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  min-width: 0;
+}
+
+.controls-side h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.side-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+.side-table th,
+.side-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.15rem 0.3rem 0.15rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.side-table thead th {
+  color: var(--muted);
+  font-weight: normal;
+  font-size: 0.8rem;
+}
+
+/* With a primary and a secondary column, a long hotkey name wraps to keep the table inside the panel. */
+.side-table tbody th {
+  font-weight: 600;
+}
+
+.side-keys {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.controls-side .hint {
+  margin: 0.3rem 0 0;
+}
+
+.tools-panel,
+.tune-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  min-width: 0;
+}
+
+.console-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.console-panel .hint {
+  margin: 0;
+}
+
+.console-log {
+  height: 16rem;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+}
+
+.console-line {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.console-line.input {
+  color: var(--muted);
+}
+
+.console-line.error {
+  color: var(--accent);
+}
+
+.console-watches {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.console-watches div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.console-watches dt {
+  font-weight: 600;
+}
+
+.console-watches dd {
+  margin: 0;
+}
+
+.console-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.console-form input {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--bg);
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+}
+
+.tools-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tools-head h2,
+.tool h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.tools-head kbd {
+  margin-left: 0.4rem;
+}
+
+.tool {
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.4rem 0;
+}
+
+.tool-check,
+.comparisons label {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.comparisons {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 0.4rem 0;
+}
+
+.tool input[type="text"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+}
+
+.tool-problem {
+  color: var(--accent);
+  margin: 0.3rem 0;
+}
+
+.tool .hint,
+.tune .hint,
+.tools-panel > .hint {
+  margin: 0.3rem 0;
+}
+
+/* A game may have dozens of values: the list scrolls inside the panel, so the picture stays in view and Reset and Save stay under the list. */
+.tune-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.4rem 0 0;
+  /* The panel's heading, hint and action row (its three buttons' labels on two lines) take the rest, with a notice above the page. */
+  max-height: max(16rem, calc(100vh - 18rem));
+  overflow-y: auto;
+}
+
+.tune-actions {
+  margin-top: 0.6rem;
+}
+
+.tune-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.tune-list input[type="range"],
+.tune-list select,
+.tune-list .hint {
+  grid-column: 1 / -1;
+}
+
+.tune-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button.small {
+  padding: 0.1rem 0.45rem;
+}
+
+.tool-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+.tool-table th,
+.tool-table td {
+  text-align: left;
+  padding: 0.15rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hex-view {
+  border-collapse: collapse;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.hex-view th {
+  font-weight: normal;
+  color: var(--muted);
+  padding: 0 0.3rem 0 0;
+}
+
+.hex-view td,
+.memory-legend .byte {
+  padding: 0 0.15rem;
+  border-radius: 2px;
+}
+
+/* A write outranks a read, which outranks a change. A read is underlined as well, so it does not rest on colour alone. */
+.byte.changed {
+  background: var(--info-bg);
+}
+
+.byte.read {
+  background: var(--warning-bg);
+  text-decoration: underline;
+}
+
+.byte.written {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.stage:fullscreen {
+  background: var(--screen-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.screen-box {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.screen-frame {
+  position: relative;
+}
+
+/* Drawn over the picture by CSS alone; the canvas and its frame stay untouched. */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+.menu-corner {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+/* A line over the picture's foot: the sound hint, or why the game paused. */
+.screen-message {
+  position: absolute;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 0.75);
+  color: #fff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.menu-corner:hover,
+.menu-corner:focus-visible {
+  opacity: 1;
+}
+
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 0.3rem;
+  color: var(--muted);
+}
+
+.screen {
+  display: block;
+  background: var(--screen-bg);
+  /* No smoothing: pixels stay sharp at any scale, and even at a whole-number one. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.rec-indicator {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: #d32f2f;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rec-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #d32f2f;
+}
+
+.play-indicator {
+  font-variant-numeric: tabular-nums;
+}
+
+.record-from,
+.volume {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.panel h3 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* The library: the start page. */
+.library-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.library-head h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.add-games,
+.continue-button {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+.library-empty {
+  max-width: 40rem;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.empty-lead {
+  font-size: 1.15rem;
+}
+
+.drop-zone {
+  border: 3px dashed var(--border);
+  border-radius: 12px;
+  padding: 3rem 1rem;
+  margin: 1rem 0;
+  background: var(--panel);
+}
+
+.drop-zone p {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+.drop-zone .add-games {
+  font-size: 1.2rem;
+  padding: 0.75rem 1.75rem;
+}
+
+.rom-help {
+  text-align: left;
+}
+
+.rom-help summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.rom-help a {
+  color: inherit;
+}
+
+.saves-panel h3 {
+  margin: 1rem 0 0.25rem;
+  font-size: 1rem;
+}
+
+.export-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.continue-card {
+  display: grid;
+  grid-template-columns: minmax(0, 256px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.continue-text h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.3rem;
+}
+
+.continue-button {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.6rem;
+}
+
+.continue-picture,
+.card-picture,
+.dialog-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 256 / 240;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.continue-picture img,
+.card-picture img,
+.dialog-picture img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.dialog-picture {
+  width: min(192px, 100%);
+  margin-bottom: 0.75rem;
+}
+
+.card-placeholder {
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.library-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.75rem 0;
+}
+
+.library-search input {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  min-width: 12rem;
+}
+
+.library-sort {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.game-card {
+  position: relative;
+  display: grid;
+}
+
+.card-open {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.4rem;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.card-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.card-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.card-tags,
+.card-played {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* The star and menu buttons sit on the picture's top right corner. */
+.card-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.card-star,
+.card-more {
+  min-width: 2.2rem;
+  min-height: 2.2rem;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.card-star[aria-pressed="true"] {
+  color: #b8860b;
+}
+
+.card-open:focus-visible,
+.continue-button:focus-visible,
+.card-star:focus-visible,
+.card-more:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.game-grid.list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
+}
+
+.game-grid.list .card-open {
+  grid-template-columns: 5rem minmax(0, 1fr);
+  align-items: center;
+}
+
+.game-grid.list .card-text {
+  /* Room for the star and menu buttons at the row's right end. */
+  padding-right: 5rem;
+}
+
+.game-grid.list .card-actions {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.drop-overlay {
+  position: fixed;
+  inset: 0.75rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed var(--accent);
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.45);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.library-dialog {
+  width: min(28rem, 100%);
+}
+
+.rename-form {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.rename-form label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rename-form input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.rename-form button {
+  justify-self: start;
+}
+
+.patch-row {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+  margin-bottom: 0.75rem;
+}
+
+button.danger {
+  background: var(--error-bg);
+}
+
+@media (max-width: 600px) {
+  .continue-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game-grid {
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  }
+}
+
+.bindings {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.5rem;
+}
+
+.bindings th {
+  text-align: left;
+  font-weight: normal;
+  padding: 0.15rem 0.5rem 0.15rem 0;
+  white-space: nowrap;
+}
+
+.bindings td,
+.bindings thead th:not(:first-child) {
+  text-align: right;
+}
+
+.key {
+  min-width: 6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.unbind,
+.unbind-space {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 1.6rem;
+  margin-left: 0.2rem;
+  padding: 0;
+}
+
+.key.waiting {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.controls h3 {
+  margin: 0.8rem 0 0.2rem;
+  font-size: 1rem;
+}
+
+.combos td {
+  vertical-align: top;
+}
+
+.combo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.combo-button {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.4rem;
+}
+
+.combo-button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* The quick menu: an overlay over the paused game. */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.quick-menu {
+  width: min(44rem, 100%);
+  max-height: calc(100vh - 1.5rem);
+  max-height: calc(100dvh - 1.5rem);
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem 1rem;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.4);
+  animation: menu-in 120ms ease-out;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-menu {
+    animation: none;
+  }
+}
+
+.menu-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.menu-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.menu-game {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.menu-items {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.05rem;
+}
+
+.menu-item:focus-visible,
+.slot-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.menu-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.slot-grid {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.slot-card {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.35rem;
+  text-align: left;
+}
+
+.slot-card.current {
+  border-color: var(--accent);
+}
+
+.slot-card[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.slot-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 256 / 240;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.slot-picture img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.slot-blank {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.slot-name {
+  font-weight: 600;
+}
+
+.slot-time {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.menu-confirm .confirm-picture {
+  display: block;
+  width: 192px;
+  max-width: 100%;
+  image-rendering: pixelated;
+  border-radius: 4px;
+}
+
+.menu-display {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.menu-display .hint {
+  margin: 0;
+}
+
+.menu-display .menu-slider {
+  grid-template-columns: 9rem minmax(8rem, 14rem) 3rem;
+}
+
+.menu-select {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.pad-diagram {
+  display: block;
+  width: min(100%, 22rem);
+  margin: 0 auto 0.5rem;
+}
+
+.pad-body {
+  fill: #c9c5bf;
+  stroke: var(--border);
+}
+
+.pad-center {
+  fill: #2b2a28;
+}
+
+.pad-hub,
+.pad-part {
+  fill: #1d1b19;
+}
+
+.pad-part[data-button="A"],
+.pad-part[data-button="B"] {
+  fill: #b3261e;
+}
+
+.pad-part.lit {
+  fill: #ffd54a;
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.pad-text {
+  fill: #c9c5bf;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.pad-part[data-button="A"] + .pad-text,
+.pad-part[data-button="B"] + .pad-text {
+  fill: #b3261e;
+  font-size: 11px;
+}

@@ -1,0 +1,34 @@
+retrowright
+Copyright (c) 2026 Patrick Bostick. Licensed under the MIT License (see LICENSE).
+
+This product includes and adapts software from jsnes
+(https://github.com/bfirsh/jsnes), Copyright 2020 Ben Firshman,
+licensed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0).
+
+- The emulator core is jsnes 2.1.0, used unmodified from npm and bundled
+  into the built page.
+- src/audio/audioOutput.ts and src/audio/sampleRing.ts adapt the approach of
+  jsnes's src/browser/speakers.js: AudioWorklet code loaded from a Blob URL,
+  emulator samples batched over the worklet's MessagePort into a ring buffer
+  that drops the oldest samples when full. Changes: the ring buffer is a
+  separate, tested class whose source text is injected into the worklet; it
+  waits for a minimum fill before playing and again after running dry; the
+  output has a gain stage for volume and mute.
+- src/player/screenRenderer.ts follows jsnes's src/browser/screen.js in
+  turning jsnes's 0x00BBGGRR frame pixels into canvas RGBA by setting the
+  alpha byte.
+
+This product includes software from Rom Patcher JS
+(https://github.com/marcrobledo/RomPatcher.js), Copyright (c) 2014-2025
+Marc Robledo, licensed under the MIT License (src/vendor/rompatcher/LICENSE).
+
+- src/vendor/rompatcher/ holds BinFile.js, HashCalculator.js,
+  RomPatcher.format.bps.js and RomPatcher.format.ips.js from its
+  rom-patcher-js/modules/ directory at commit
+  3183884086825c3a57c72026234debcef1e2240c, with its LICENSE file. Changes,
+  each marked "retrowright:" in the file: ES module imports and exports in
+  place of globals and module.exports, BinFile's Node block (which loaded fs
+  for file paths) removed, and variables that were assigned without being
+  declared declared with var, since an ES module is strict. The .d.ts files
+  beside them are retrowright's own.

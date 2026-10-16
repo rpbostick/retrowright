@@ -1,0 +1,171 @@
+{
+  "format": "retrowright-touch-layout",
+  "version": 1,
+  "name": "Phone",
+  "orientations": {
+    "portrait": {
+      "size": { "width": 390, "height": 640 },
+      "screen": { "frame": { "x": 0, "y": 0, "width": 390, "height": 366 }, "anchor": { "x": "center", "y": "start" } },
+      "controls": [
+        {
+          "id": "menu",
+          "kind": "menu",
+          "label": "☰",
+          "shape": "pill",
+          "frame": { "x": 334, "y": 372, "width": 46, "height": 36 },
+          "extend": { "top": 4, "right": 4, "bottom": 4, "left": 4 },
+          "anchor": { "x": "end", "y": "start" }
+        },
+        {
+          "id": "fast",
+          "kind": "fastForward",
+          "label": "»",
+          "shape": "pill",
+          "frame": { "x": 278, "y": 372, "width": 46, "height": 36 },
+          "extend": { "top": 4, "right": 4, "bottom": 4, "left": 4 },
+          "anchor": { "x": "end", "y": "start" }
+        },
+        {
+          "id": "dpad",
+          "kind": "dpad",
+          "frame": { "x": 12, "y": 420, "width": 150, "height": 150 },
+          "extend": { "top": 16, "right": 8, "bottom": 16, "left": 12 },
+          "anchor": { "x": "start", "y": "end" },
+          "diagonalDegrees": 30
+        },
+        {
+          "id": "b",
+          "kind": "button",
+          "buttons": ["B"],
+          "label": "B",
+          "shape": "circle",
+          "frame": { "x": 184, "y": 470, "width": 76, "height": 76 },
+          "extend": { "top": 20, "right": 0, "bottom": 20, "left": 6 },
+          "anchor": { "x": "end", "y": "end" }
+        },
+        {
+          "id": "ab",
+          "kind": "button",
+          "buttons": ["A", "B"],
+          "label": "A+B",
+          "shape": "pill",
+          "frame": { "x": 262, "y": 448, "width": 28, "height": 84 },
+          "extend": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+          "anchor": { "x": "end", "y": "end" }
+        },
+        {
+          "id": "a",
+          "kind": "button",
+          "buttons": ["A"],
+          "label": "A",
+          "shape": "circle",
+          "frame": { "x": 292, "y": 440, "width": 76, "height": 76 },
+          "extend": { "top": 20, "right": 22, "bottom": 20, "left": 0 },
+          "anchor": { "x": "end", "y": "end" }
+        },
+        {
+          "id": "select",
+          "kind": "button",
+          "buttons": ["Select"],
+          "label": "SELECT",
+          "shape": "pill",
+          "frame": { "x": 112, "y": 596, "width": 76, "height": 30 },
+          "extend": { "top": 6, "right": 7, "bottom": 14, "left": 8 },
+          "anchor": { "x": "center", "y": "end" }
+        },
+        {
+          "id": "start",
+          "kind": "button",
+          "buttons": ["Start"],
+          "label": "START",
+          "shape": "pill",
+          "frame": { "x": 202, "y": 596, "width": 76, "height": 30 },
+          "extend": { "top": 6, "right": 8, "bottom": 14, "left": 7 },
+          "anchor": { "x": "center", "y": "end" }
+        }
+      ]
+    },
+    "landscape": {
+      "size": { "width": 760, "height": 340 },
+      "screen": { "frame": { "x": 199, "y": 0, "width": 362, "height": 340 }, "anchor": { "x": "center", "y": "center" } },
+      "controls": [
+        {
+          "id": "menu",
+          "kind": "menu",
+          "label": "☰",
+          "shape": "pill",
+          "frame": { "x": 16, "y": 12, "width": 46, "height": 36 },
+          "extend": { "top": 4, "right": 4, "bottom": 4, "left": 4 },
+          "anchor": { "x": "start", "y": "start" }
+        },
+        {
+          "id": "fast",
+          "kind": "fastForward",
+          "label": "»",
+          "shape": "pill",
+          "frame": { "x": 698, "y": 12, "width": 46, "height": 36 },
+          "extend": { "top": 4, "right": 4, "bottom": 4, "left": 4 },
+          "anchor": { "x": "end", "y": "start" }
+        },
+        {
+          "id": "select",
+          "kind": "button",
+          "buttons": ["Select"],
+          "label": "SELECT",
+          "shape": "pill",
+          "frame": { "x": 104, "y": 60, "width": 72, "height": 30 },
+          "extend": { "top": 10, "right": 8, "bottom": 10, "left": 8 },
+          "anchor": { "x": "start", "y": "start" }
+        },
+        {
+          "id": "dpad",
+          "kind": "dpad",
+          "frame": { "x": 20, "y": 150, "width": 160, "height": 160 },
+          "extend": { "top": 20, "right": 12, "bottom": 20, "left": 20 },
+          "anchor": { "x": "start", "y": "end" },
+          "diagonalDegrees": 30
+        },
+        {
+          "id": "start",
+          "kind": "button",
+          "buttons": ["Start"],
+          "label": "START",
+          "shape": "pill",
+          "frame": { "x": 584, "y": 60, "width": 72, "height": 30 },
+          "extend": { "top": 10, "right": 8, "bottom": 10, "left": 8 },
+          "anchor": { "x": "end", "y": "start" }
+        },
+        {
+          "id": "b",
+          "kind": "button",
+          "buttons": ["B"],
+          "label": "B",
+          "shape": "circle",
+          "frame": { "x": 576, "y": 222, "width": 76, "height": 76 },
+          "extend": { "top": 20, "right": 0, "bottom": 20, "left": 8 },
+          "anchor": { "x": "end", "y": "end" }
+        },
+        {
+          "id": "ab",
+          "kind": "button",
+          "buttons": ["A", "B"],
+          "label": "A+B",
+          "shape": "pill",
+          "frame": { "x": 654, "y": 180, "width": 26, "height": 100 },
+          "extend": { "top": 0, "right": 0, "bottom": 0, "left": 0 },
+          "anchor": { "x": "end", "y": "end" }
+        },
+        {
+          "id": "a",
+          "kind": "button",
+          "buttons": ["A"],
+          "label": "A",
+          "shape": "circle",
+          "frame": { "x": 682, "y": 162, "width": 76, "height": 76 },
+          "extend": { "top": 20, "right": 2, "bottom": 20, "left": 0 },
+          "anchor": { "x": "end", "y": "end" }
+        }
+      ]
+    }
+  }
+}

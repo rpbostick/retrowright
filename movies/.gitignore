@@ -1,0 +1,8 @@
+# Movies of commercial games stay local: they are recordings of someone
+# else's game. Only movies of the synthetic test ROM are committed.
+*.rwmovie.json
+!synthetic-*.rwmovie.json
+# The search bot's movies, reports and screenshots (npm run bot).
+/bot/
+# Local TAS downloads and conversions.
+/tas

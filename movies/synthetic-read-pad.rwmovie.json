@@ -1,0 +1,41 @@
+{
+  "format": "retrowright-movie",
+  "version": 1,
+  "rom": {
+    "name": "synthetic-read-pad.nes",
+    "sha256": "6d054bfe13fd221e345e1e74fec14a092520ec2924f4cade20bcefa7dadd6f05"
+  },
+  "core": {
+    "name": "jsnes",
+    "version": "2.1.0"
+  },
+  "start": {
+    "kind": "power-on",
+    "batteryRam": null
+  },
+  "frames": 40,
+  "inputs": [
+    {"frame":10,"pad1":9,"pad2":0},
+    {"frame":20,"pad1":0,"pad2":0}
+  ],
+  "events": [
+    {"frame":30,"kind":"reset"}
+  ],
+  "checkpoints": [
+    {
+      "frame": 10,
+      "name": "nothing pressed yet",
+      "expect": { "memory": ["$0010 == 0", "$0011 == 0", "$0012 == 0"] }
+    },
+    {
+      "frame": 20,
+      "name": "A and Start held",
+      "expect": { "memory": ["$0010 == 1", "$0012 == 1"] }
+    },
+    {
+      "frame": 40,
+      "name": "after the reset",
+      "expect": { "memory": ["$0010 == 0", "$0011 == 0", "$0012 == 0"] }
+    }
+  ]
+}

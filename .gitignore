@@ -1,0 +1,18 @@
+node_modules/
+dist/
+# ROM files are never committed.
+/roms
+*.nes
+*.fds
+*.sfc
+*.smc
+*.gba
+*.gb
+*.gbc
+*.sav
+# npm run tas:trace's default output: screenshots of a commercial game.
+/tas-trace/
+# A game project's own names for the name scan (harness/nameScan.ts); kept out of the history.
+/.name-scan
+# Default output folder of the browser checks (e2e/) and the diff CLI.
+/.out/
